@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+
+################################################################################
+#                                                                              #
+# Copyright (C) 2023 Brunk (Anas)                                              #
+#                                                                              #
+# pdf2img - Extract images from a PDF file	                                   #
+#                                                                              #
+#                                                                              #
+#                                                                              #
+# GNU GENERAL PUBLIC LICENSE                                                   #
+#                                                                              #
+# This program is free software: you can redistribute it and/or modify         #
+# it under the terms of the GNU General Public License as published by         #
+# the Free Software Foundation, either version 3 of the License, or            #
+# (at your option) any later version.                                          #
+#                                                                              #
+# This program is distributed in the hope that it will be useful,              #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of               #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                #
+# GNU General Public License for more details.                                 #
+#                                                                              #
+# You should have received a copy of the GNU General Public License            #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.        #
+#                                                                              #
+################################################################################
+
+
+from os.path import exists, isdir, abspath, basename
+from fitz import open as open_pdf
+from termcolor import colored
+from time import strftime
+from sys import argv
+from os import mkdir
+
+def abstract_log(text: str, color: str, log_text:str, important: bool = False, date_color: str = "light_blue"):
+    attrs = []
+    lb = colored("[", "white")
+    rb = colored("]", "white")
+    print(lb + colored(strftime("%H:%M:%S"), date_color) + rb, end=" ")
+    print(lb, end="")
+    if(important):
+        attrs = ["bold"]
+    print(colored(log_text, color, attrs=attrs) + colored("] ", "white") + colored(text, "white", attrs=attrs))
+
+def warning(text: str, important: bool = False):
+    abstract_log(text=text, color="yellow", log_text="WARNING", important=important)
+
+def info(text: str, important: bool = False):
+    abstract_log(text=text, color="light_green", log_text="INFO", important=important)
+
+def critical(text: str):
+    abstract_log(text=text, color="red", log_text="CRITICAL", important=True)
+
+
+def parse_args():
+    if(len(argv) < 2):
+        critical("missing mandatory argument: <PDF>")
+        info(f"Usage: {argv[0]} <PDF> [OUTPUT]")
+        exit()
+
+    if(not exists(argv[1])):
+        critical(f"{argv[1]} does not exist")
+        exit()
+
+    if(len(argv) == 2):
+        warning("output directory not specified")
+        argv.append("output_pdf2img")
+        if(not exists(argv[2])):
+            mkdir(abspath(argv[2]))
+
+    if(not exists(argv[2])):
+        critical(f"{argv[2]} does not exist")
+        exit()
+
+    if(not isdir(argv[2])):
+        critical(f"{argv[2]}: not a directory")
+        exit()
+
+    info(f"outputing to ./{argv[2]}\n", True)
+    return abspath(argv[1]), abspath(argv[2])
+
+
+def extract_images_from_pdf(pdf, output):
+    info(f"opening {pdf}")
+    pdf_document = open_pdf(pdf)
+
+    image_list = []
+    for page_num in range(pdf_document.page_count):
+        page = pdf_document.load_page(page_num)
+        image_list += page.get_images(full=True)
+
+    for i, img in enumerate(image_list):
+        image = pdf_document.extract_image(img[0])
+        image_bytes = image["image"]
+
+        filename = f"image_{basename(pdf)}_{i + 1}.png"
+        info(f"extracting {filename}")
+        with open(f"{output}/{filename}", "wb") as image_file:
+            image_file.write(image_bytes)
+
+
+if __name__ == "__main__":
+    pdf, output = parse_args()
+    extract_images_from_pdf(pdf=pdf, output=output)
