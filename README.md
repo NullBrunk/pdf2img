@@ -31,6 +31,6 @@ python3 pdf2img
 ```
 
 If you want to make it globally usable
-```
-sudo mv pdf2imgbash /usr/bin/
+```bash
+sudo mv pdf2img /usr/bin/
 ```
