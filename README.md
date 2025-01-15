@@ -17,7 +17,7 @@ I made it versatile so it can be used in any situation. You can use it with the 
 pdf2img <PDF_FILE> [OUTPUT_DIRECTORY]
 ```
 
-![image](https://github.com/user-attachments/assets/8ffdf2c3-0a3d-4072-a2a7-0480eea35437)
+![image](https://github.com/user-attachments/assets/ba75bac3-4f4a-45af-bc24-6a4d3585d79c)
 
 
 # ⚒️ Installation
