@@ -10,7 +10,7 @@
 
 # 🚀 Usage
 
-This is a tool that I wrote during the <a href="https://ctftime.org/event/2582/">New Year CTF 2025</a> to solve the **Bel Money2** challenge. <br>
+I wrote this tool during the <a href="https://ctftime.org/event/2582/">New Year CTF 2025</a>, in order to solve the **Bel Money2** challenge. <br>
 I made it versatile so it can be used in any situation. You can use it with the following command :
 
 ```bash
